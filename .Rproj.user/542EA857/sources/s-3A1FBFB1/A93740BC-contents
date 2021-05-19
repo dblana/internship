@@ -170,7 +170,7 @@ pre code {
 
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>In this markdown, we will present some ideas to propose time series forecast in R. To illustrate the methods we will be using, we will focus on the use of COVID tracking data, available on <a href="https://covidtracking.com/data">covidtracking.com</a>. This dataset presents various numbers related to COVID, such as the number of death, hospitalizations or tests, for each state of the United States. From this data, our objective will be to propose and evaluate methods, that would be able to forecast the evolution of the number of currently hospitalized people, in a given state.</p>
+<p>In this markdown, we will present some ideas to propose forecasting time series data in R. To illustrate the methods we will be using, we will focus on the use of COVID tracking data, available on <a href="https://covidtracking.com/data">covidtracking.com</a>. This dataset presents various numbers related to COVID, such as the number of death, hospitalizations or tests, for each state of the United States. From this data, our objective will be to propose and evaluate methods, that would be able to forecast the evolution of the number of currently hospitalized people, in a given state.</p>
 </div>
 <div id="importing-libraries" class="section level2">
 <h2>Importing libraries</h2>
@@ -183,7 +183,7 @@ library(feasts)</code></pre>
 </div>
 <div id="loading-the-dataset" class="section level2">
 <h2>Loading the dataset</h2>
-<p>The first step we need to follow is the loading of the data. To do so, we will extract it from a csv file, and put it into the variable <code>data</code>. Once this is done, we can use the missing_glimpse function, from the <code>finalfit</code> library, that allows us to visualize the different columns composing our dataset, their type (continuous or categorical) and the number of missing values for each column. Here, to illustrate our results, we will focus on data related to the state of Colorado. For this reason, we will create another variable <code>data_co</code> containing the data that interests us.</p>
+<p>The first step we need to follow is the loading of the data. To do so, we will extract it from a csv file, and put it into the variable <code>data</code>. Once this is done, we can use the missing_glimpse function, from the <code>finalfit</code> library, that allows us to visualize the different columns composing our dataset, their type (continuous or categorical) and the number of missing values for each column. Here, to illustrate our results, we will focus on data concerning the state of Colorado. For this reason, we will create another variable <code>data_co</code> containing the data that interests us.</p>
 <pre class="r"><code>data &lt;- read_csv(&quot;data.csv&quot;)</code></pre>
 <pre><code>## 
 ## ── Column specification ────────────────────────────────────────────────────────
