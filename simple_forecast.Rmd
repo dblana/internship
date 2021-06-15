@@ -8,7 +8,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 ## Introduction
 
-In this markdown, we will present some ideas to propose time series forecast in R.
+In this markdown, we will present some ideas to propose time series forecasting in R.
 To illustrate the methods we will be using, we will focus on the use of COVID tracking data, available on [covidtracking.com](https://covidtracking.com/data). This dataset presents various numbers related to COVID, such as the number of death, hospitalizations or tests, for each state of the United States. From this data, our objective will be to propose and evaluate methods, that would be able to forecast the evolution of the number of currently hospitalized people, in a given state.
 
 ## Importing libraries
