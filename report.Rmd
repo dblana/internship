@@ -23,6 +23,8 @@ library(feasts)
 library(forecast)
 library(MLmetrics)
 library(reshape2)
+library(nnfor)
+library(imputeTS)
 ```
 
 ## Loading the dataset
@@ -256,5 +258,85 @@ ggplot(df_reduced, aes(x = not_na_states, y= errors, fill = variable), xlab="Met
   ylab('MSE')
 
 ```
-Here, we can observe that the results presented on the selected states are indeed better than the one obtained using the naive method. However, we still can find cases where the forecast is not really representative of the evolution of hospitalizations. This happens mainly when we observed a sudden increase or decrease. This is actually the case for the state of Kentucky.
+Here, we can observe that the results presented on the selected states are indeed better than the one obtained using the naive method. However, we still can find cases where the forecast is not really representative of the evolution of hospitalizations. This happens mainly when we observed a sudden increase or decrease. This is actually the case for the state of Kentucky. \\
 ![Kentucky Forecast](outputs/exp_graphs/hospitalizationsKY.png)
+
+## Multi Layers Perceptron
+
+In this section, we will try to implement a MLP, using the nnfor package.
+
+```{r mlp init}
+
+x <- ts(train$hospitalizedCurrently)
+x <- ts(na_remove(x))
+
+fit1 <- mlp(x)
+plot(fit1)
+```
+This plot represents the MLP architecture that is being used to train our model.
+We can change it, but we will leave this default parameterization for the first tests.
+Using this model, we then can forecast the evolution of hospitalizations, for the state of Colorado first.
+
+```{r CO frc}
+frc <- predict(fit1, h=30)
+
+plot(frc)
+```
+
+Now, in order to evaluate this new method, we will use the same method as previously, computing MSE for forecasting on each state, then comparing it to the results given by exponential smoothing.
+
+```{r all states mlp}
+errors_mlp <- c()
+
+for(st in states){
+  data_state <- as_tsibble(data %>% filter(state==st), index = date)
+  if(!all(is.na(data_state$hospitalizedCurrently))){
+    data_state$hospitalizedCurrently <- na.interp(data_state$hospitalizedCurrently)
+    not_na_states <- c(not_na_states, st)
+    
+    if(st=="VI"){
+      break
+    }
+    
+    train <- data_state %>%
+      filter_index("2020-03-06" ~ "2021-02-06")
+    
+    test <- data_state %>%
+      filter_index("2021-02-07" ~ .)
+    
+    x <- ts(train$hospitalizedCurrently)
+    x <- ts(na_remove(x))
+    
+    fit <- mlp(x)
+    frc <- predict(fit, h=length(test$hospitalizedCurrently))
+    
+    y <- test$hospitalizedCurrently
+    y_hat <- frc$mean
+    
+    err <- MSE(y, y_hat)
+    errors_mlp <- c(errors_mlp, err)
+    
+    png(filename=paste0("outputs/mlp_graphs/hospitalizations",st,".png"),width=800,height=600) 
+    plot(frc)
+    dev.off()
+  }
+}
+```
+
+```{r mse plot}
+df <- data.frame(head(not_na_states,48), head(errors,48), errors_mlp)
+names(df)[2] <- 'Exponential smoothing'
+names(df)[3] <- 'MLP'
+
+df_reduced <- df[c(5,10,11,16,18,19,20,21),]
+
+df_reduced <- melt(df_reduced)
+names(df_reduced)[1] <- "not_na_states"
+names(df_reduced)[3] <- "errors"
+
+ggplot(df_reduced, aes(x = not_na_states, y= errors, fill = variable, xlab="Method")) +
+  geom_bar(stat="identity", width=.5, position = "dodge")  +
+  ggtitle('MSE according states for each method') +
+  xlab('state') +
+  ylab('MSE')
+```
