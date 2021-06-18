@@ -11,3 +11,7 @@ The details of my code is presented on the `report.Rmd` markdown, while the resu
 Beside it, I also created a markdown which aims to make people able to use my code and adapt it to their own datasets. In this `forecasting.Rmd` document, the forecasting method used is the exponential smoothing, because this is the one that produced the best results during my experiments. This method should produce satisfacoty results on datasets similar to the one that I used for tests.
 
 The final chosen method may not be the best we could find. I started training MLP models that can be more complex and difficult to tune properly. It sill might be a good idea to go further in this direction and try to improve results.
+
+Finally, another option worth exploring would be models based on externel inputs, not only on the evolution of data along time. I could just start thinking of this kind of solution, implemting a multi variable linear regression, taking into acount the evolution of positive cases. The fitted model obtained is presented by the following graph:
+
+![Linear regression](Rplot.png)
