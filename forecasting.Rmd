@@ -1,0 +1,97 @@
+---
+title: "Forecasting"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this document, we will present forecasting methods that can be used with time series data. Here, we will illustrate how the algorithm is working by forecasting evolution of hospitalizations due to COVID-19, in the state of Colorado. To do so, we are using data available on [covidtracking.com](https://covidtracking.com/data). This document is written to be adapted to your own dataset and forecasting needs.
+
+## Import of the libraries:
+
+
+```{r libraries, message=FALSE}
+library(tidyverse)
+library(finalfit)
+library(broom)
+library(tsibble)
+library(fable)
+library(feasts)
+library(forecast)
+library(MLmetrics)
+library(reshape2)
+library(nnfor)
+library(imputeTS)
+```
+
+## Import of the dataset:
+
+To import your dataset, juste replace data.csv by the path of your data.
+The missing glimpse function allows you tu visualize missing data for each column of your dataset.
+
+```{r data}
+data <- read_csv("data.csv")
+missing_glimpse(data)
+```
+
+Here, you can define a dependent variable `dep_var`, that will be forecast with respect to an explanatory variable `exp_var`.
+
+```{r variables}
+dep_var <- 'hospitalizedCurrently'
+exp_var <- 'date'
+```
+
+Now, you have to convert data to make it usable by our models.
+You can also filter data. Here we use it to get only data related to Colorado. If you don't need to do so, you can just write `data <- as_tsibble(data)`.
+
+```{r convert}
+data <- as_tsibble(data %>% filter(state=="CO"), index = date)
+data[dep_var] <- na.interp(data[dep_var])
+```
+
+```{r plot}
+data %>% ggplot(aes_string(x = exp_var, y = dep_var))+
+  geom_line()+  ggtitle('Evolution of hospitalization')+
+  xlab('Date')+
+  ylab('Currently Hospitalized People')
+```
+
+The method we will be using to forecast is the exponential smoothing. This general method however presents some variations. We will first test a few of them, before choosing the one that might give us eh best results.
+
+```{r ETS}
+data %>%
+  stretch_tsibble(.init = 10) %>%
+  model(
+    SES = ETS(hospitalizedCurrently ~ error("A") + trend("N") + season("N")),
+    Holt = ETS(hospitalizedCurrently ~ error("A") + trend("A") + season("N")),
+    Damped = ETS(hospitalizedCurrently ~ error("A") + trend("Ad") +
+                   season("N"))
+  ) %>%
+  forecast(h = 1) %>%
+  accuracy(data)
+```
+
+To chose our method, we need to observe the MSE and the MAPE computed for each of them. I our case, Holt and Damped seem to produce similar accuracies. We decide here to keep the Damped one.
+We finally can forecast data, after we decided how many values we would like to predict. This values is held in the `frc_length` variable.
+The following code can now plot the forecast evolution.
+
+```{r Damped}
+frc_length <- 30
+
+frc <- data %>% 
+  model(Damped = ETS(hospitalizedCurrently ~ error("A") + trend("Ad") + season("N"))) %>% 
+  forecast(h = frc_length)
+
+frc %>%
+  autoplot(data) +
+  labs(x="Date", y="Number currently hospitalized people",
+       title = "Evolution of currently hospitalized people")
+```
+
+We also directly can access the forecast values:
+
+```{r values}
+  print(pull(frc,'.mean'))
+```
