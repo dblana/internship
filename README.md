@@ -15,3 +15,5 @@ The final chosen method may not be the best we could find. I started training ML
 Finally, another option worth exploring would be models based on externel inputs, not only on the evolution of data along time. I could just start thinking of this kind of solution, implemting a multi variable linear regression, taking into acount the evolution of positive cases. The fitted model obtained is presented by the following graph:
 
 ![Linear regression](Rplot.png)
+
+This shows that such ideas would be worth being explored. We indeed can imagine of various relevant external inputs. In our case, such methods could also allow us to evaluate the efficiency of a lockdown, if we add this information to our model and check the evolution of hospitalizations.
