@@ -70,7 +70,7 @@ Forecasting can indeed be performed by analyzing the shape of a curve. To do so 
 
 * Average: the value returned as a forecast will be the mean value of the training sample.
 * Naive: the value returned as a forecast will be the last value of the training sample.
-* Seasonal Naive: the forecast 
+* Seasonal Naive: the forecast will be set to the last season values.
 
 ```{r pressure}
 
@@ -258,7 +258,8 @@ ggplot(df_reduced, aes(x = not_na_states, y= errors, fill = variable), xlab="Met
   ylab('MSE')
 
 ```
-Here, we can observe that the results presented on the selected states are indeed better than the one obtained using the naive method. However, we still can find cases where the forecast is not really representative of the evolution of hospitalizations. This happens mainly when we observed a sudden increase or decrease. This is actually the case for the state of Kentucky. \\
+Here, we can observe that the results presented on the selected states are indeed better than the one obtained using the naive method. However, we still can find cases where the forecast is not really representative of the evolution of hospitalizations. This happens mainly when we observed a sudden increase or decrease. This is actually the case for the state of Kentucky.
+
 ![Kentucky Forecast](outputs/exp_graphs/hospitalizationsKY.png)
 
 ## Multi Layers Perceptron
