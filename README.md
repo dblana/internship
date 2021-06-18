@@ -7,4 +7,4 @@ This dataset presents COVID-19 related data, for each state of the US, such as n
 For different methods, I have thus been able to train models on data of every state, and propose a robust evaluation of each of them, computing errors on my predictions.
 The details of my code is presented on the `report.Rmd` markdown, while the resulting graphed are stored in the outpus directory. This document presents all the methodology that I followed to implement forecasting models and evaluate them.
 
-Beside it, I also created a markdown which aims to make people able to use my code and adapt it to their own datasets. In this document, the forecasting method used is the exponential smoothing, because this is the one that produced the best results during my experiments.
+Beside it, I also created a markdown which aims to make people able to use my code and adapt it to their own datasets. In this `forecasting.Rmd` document, the forecasting method used is the exponential smoothing, because this is the one that produced the best results during my experiments.
